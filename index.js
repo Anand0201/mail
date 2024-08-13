@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { configDotenv } from "dotenv";
 import nodemailer from "nodemailer";
 import path from "path";
+import cors from "cors";
 import { fileURLToPath } from 'url';
 
 configDotenv()
@@ -32,6 +33,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs')
+
+const corsOptions = {
+    origin: 'https://mail-icmm.onrender.com/register',
+    methods: 'GET, POST',
+    allowedHeaders:['Content-Type','Authorization']
+};
+
+app.use(cors(corsOptions))
 
 var sendermail = nodemailer.createTransport({
     service: 'gmail',
