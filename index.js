@@ -12,32 +12,32 @@ configDotenv()
 mongoose.connect(process.env.MONGO)
 let db = mongoose.connection
 
-db.once('open',() =>{
+db.once('open', () => {
     console.log("Database connected")
 })
 
 const schema = mongoose.Schema;
 
-const user = new schema({
-    name: {type: String},
-    email: {type: String}
+const UserSchema = new schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true }
 })
 
-const userSchema = mongoose.model("User", user);
+const User = mongoose.model("User", UserSchema);
 
 // Route
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
-app.use(express.json());    
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs')
 
 const corsOptions = {
-    origin: 'https://mail-icmm.onrender.com/register',
+    origin: '*',
     methods: 'GET, POST',
-    allowedHeaders:['Content-Type','Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
 
 app.use(cors(corsOptions))
@@ -50,45 +50,54 @@ var sendermail = nodemailer.createTransport({
     }
 });
 
-app.get('/',(req, res) => {
+app.get('/', (req, res) => {
     res.render('index')
 })
 
-app.post('/register',(req,res) => {
-
+app.post('/register', async (req, res) => {
     try {
-        const user = new userSchema({
+        // Debugging logs to check if data is received properly
+        console.log("Request Body:", req.body);
+
+        if (!req.body.name || !req.body.email) {
+            console.log("Missing name or email in request body.");
+            return res.status(400).json({ error: "Name and Email are required." });
+        }
+
+        const newUser = new User({
             name: req.body.name,
             email: req.body.email
-        })
-        user.save()
+        });
+
+        await newUser.save();
 
         var mailOptions = {
             from: process.env.EMAIL,
             to: req.body.email,
             subject: 'Welcome to our website',
             text: 'Hello ' + req.body.name + ',\n\nWelcome to our website. We are glad to have you on board.'
-        }
+        };
 
-        sendermail.sendMail(mailOptions, function(error, info){
+        sendermail.sendMail(mailOptions, function (error, info) {
             if (error) {
-              console.log(error);
+                console.log(error);
+                return res.status(500).json({ error: "Failed to send email." });
             } else {
-              console.log('Email sent: ' + info.response);
+                console.log('Email sent: ' + info.response);
+                return res.status(200).json({ message: 'Email Sent successfully.' });
             }
         });
-
-        res.render('index')
-    } catch {
-        console.log('Internal Error');
+    } catch (error) {
+        console.error('Internal Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-})
+});
 
 var PORT = 1000
 
 app.listen(PORT, (err) => {
-    if(err){
+    if (err) {
         console.log(err)
-    } 
+    }
     console.log('Server is running on port ' + PORT)
 })
