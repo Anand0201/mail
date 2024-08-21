@@ -19,8 +19,11 @@ db.once('open', () => {
 const schema = mongoose.Schema;
 
 const UserSchema = new schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true }
+    pickup: { type: String, required: true },
+    drop: { type: String, required: true },
+    date: { type: String, required: true },
+    time: { type: String, required: true },
+    number: { type: String, required: true }
 })
 
 const User = mongoose.model("User", UserSchema);
@@ -65,17 +68,25 @@ app.post('/register', async (req, res) => {
         }
 
         const newUser = new User({
-            name: req.body.name,
-            email: req.body.email
+            pickup: req.body.pickup,
+            drop: req.body.drop,
+            date: req.body.date,
+            time: req.body.time,
+            number: req.body.number
         });
 
         await newUser.save();
 
         var mailOptions = {
-            from: process.env.EMAIL,
-            to: req.body.email,
+            from: "pgvaghela07@gmail.com",
+            to: "piyushvaghela223@gmail.com",
             subject: 'Welcome to our website',
-            text: 'Hello ' + req.body.name + ',\n\nWelcome to our website. We are glad to have you on board.'
+            text: 'Hello piyush vaghela,\n\n New booking detials is here',
+            '$(req.body.pickup)',
+            '$(req.body.drop)',
+            '$(req.body.date)',
+            '$(req.body.time)',
+            '$(req.body.number)'
         };
 
         sendermail.sendMail(mailOptions, function (error, info) {
