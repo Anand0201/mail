@@ -48,8 +48,8 @@ app.use(cors(corsOptions))
 var sendermail = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASS
+        user: 'pgvaghela07@gmail.com',
+        pass: 'uysaxhmhupukwkwh'
     }
 });
 
@@ -62,11 +62,6 @@ app.post('/register', async (req, res) => {
         // Debugging logs to check if data is received properly
         console.log("Request Body:", req.body);
 
-        if (!req.body.name || !req.body.email) {
-            console.log("Missing name or email in request body.");
-            return res.status(400).json({ error: "Name and Email are required." });
-        }
-
         const newUser = new User({
             pickup: req.body.pickup,
             drop: req.body.drop,
@@ -78,7 +73,7 @@ app.post('/register', async (req, res) => {
         await newUser.save();
 
         var mailOptions = {
-            from: "pgvaghela07@gmail.com",
+            from: 'pgvaghela07@gmail.com',
             to: "piyushvaghela223@gmail.com",
             subject: 'Welcome to our website',
             text: 'Hello piyush vaghela,\n\n New booking detials is here,' + req.body.pickup + '\n' + req.body.drop + '\n' + req.body.date + '\n' + req.body.time + '\n' + req.body.number + '.'
