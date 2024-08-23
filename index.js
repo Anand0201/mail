@@ -76,7 +76,7 @@ app.post('/register', async (req, res) => {
             from: 'pgvaghela07@gmail.com',
             to: "piyushvaghela223@gmail.com",
             subject: 'Welcome to our website',
-            text: 'Hello piyush vaghela,\n\n New booking detials is here,' + req.body.pickup + '\n' + req.body.drop + '\n' + req.body.date + '\n' + req.body.time + '\n' + req.body.number + '.'
+            text: 'Hello, Shree Balaji Tour and travels,\n\n New booking detials is here,' + '\n' + 'Pickup Location :-' + req.body.pickup + '\n' + 'Drop Location :-' + req.body.drop + '\n' + 'Booking Date :-' + req.body.date + '\n' + 'Booking Time :-' + req.body.time + '\n' + 'Booking Number :-' + req.body.number + '.'
         };
 
         sendermail.sendMail(mailOptions, function (error, info) {
